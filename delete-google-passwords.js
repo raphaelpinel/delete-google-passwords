@@ -215,6 +215,108 @@ async function waitForEntryDetails(page) {
   return false;
 }
 
+async function hasAnyLocator(locators) {
+  for (const locator of locators) {
+    if (await locator.count()) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+async function isEmptyGroupPage(page) {
+  const detailSignals = [
+    page.getByText(USERNAME_TEXT).first(),
+    page.getByText(PASSWORD_FIELD_TEXT).first(),
+    page.getByRole('button', { name: DELETE_TEXT }).first(),
+    page.locator('button').filter({ hasText: DELETE_TEXT }).first(),
+  ];
+
+  if (await hasAnyLocator(detailSignals)) {
+    return false;
+  }
+
+  const backSignals = [
+    page.getByRole('button', { name: BACK_TEXT }).first(),
+    page.locator('[aria-label]').filter({ hasText: BACK_TEXT }).first(),
+  ];
+
+  const pageTextSignals = [
+    page.getByText(/security|securite|sécurité|turvallisuus|sakerhet|säkerhet|sicherheit|bezpieczenstwo|bezpieczeństwo/i).first(),
+    page.getByText(/only you can view|vous seul pouvez voir|sinä voit|bara du kan se|nur sie koennen sehen|nur sie können sehen|tylko ty mozesz zobaczyc|tylko ty możesz zobaczyć/i).first(),
+  ];
+
+  return (await hasAnyLocator(backSignals)) && (await hasAnyLocator(pageTextSignals));
+}
+
+async function goBackToList(page) {
+  const backCandidates = [
+    page.getByRole('button', { name: BACK_TEXT }).first(),
+    page.locator('[aria-label*="retour" i], [aria-label*="back" i], [aria-label*="takaisin" i], [aria-label*="zuruck" i], [aria-label*="zurück" i], [aria-label*="wstecz" i]').first(),
+  ];
+
+  for (const locator of backCandidates) {
+    if (await locator.count()) {
+      await locator.click({ force: true });
+      await page.waitForTimeout(1000);
+      return true;
+    }
+  }
+
+  return false;
+}
+
+async function isOnListPage(page) {
+  const listSignals = [
+    page.getByText(URL_TEXT).first(),
+    page.locator('input[type="search"]').first(),
+    page.locator('input').first(),
+  ];
+
+  if (!(await hasAnyLocator(listSignals))) {
+    return false;
+  }
+
+  const detailSignals = [
+    page.getByText(USERNAME_TEXT).first(),
+    page.getByText(PASSWORD_FIELD_TEXT).first(),
+    page.getByRole('button', { name: DELETE_TEXT }).first(),
+    page.locator('button').filter({ hasText: DELETE_TEXT }).first(),
+  ];
+
+  if (await hasAnyLocator(detailSignals)) {
+    return false;
+  }
+
+  return true;
+}
+
+async function waitForDeleteOutcome(page, timeoutMs = 5000) {
+  const detailSignals = [
+    page.getByText(USERNAME_TEXT).first(),
+    page.getByText(PASSWORD_FIELD_TEXT).first(),
+    page.getByRole('button', { name: DELETE_TEXT }).first(),
+    page.locator('button').filter({ hasText: DELETE_TEXT }).first(),
+    page.getByRole('button', { name: CANCEL_TEXT }).first(),
+  ];
+
+  const deadline = Date.now() + timeoutMs;
+  while (Date.now() < deadline) {
+    if (await isOnListPage(page)) {
+      return 'list';
+    }
+
+    if (await hasAnyLocator(detailSignals)) {
+      return 'details';
+    }
+
+    await page.waitForTimeout(200);
+  }
+
+  return 'unknown';
+}
+
 async function clickDeleteButton(page) {
   const selectors = [
     page.getByRole('button', { name: DELETE_TEXT }).first(),
@@ -255,25 +357,54 @@ async function clickDeleteButton(page) {
       return null;
     }
 
-    const textNodes = Array.from(document.querySelectorAll('span, div'));
-    for (const node of textNodes) {
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    const candidates = [];
+
+    while (walker.nextNode()) {
+      const node = walker.currentNode;
       const text = (node.textContent || '').trim();
-      if (!text || !deleteRegex.test(text) || !isVisible(node)) {
+      const owner = node.parentElement;
+      if (!text || !owner || !deleteRegex.test(text) || !isVisible(owner)) {
         continue;
       }
 
-      const target = clickableAncestor(node);
+      const target = clickableAncestor(owner);
       if (!target || !isVisible(target)) {
         continue;
       }
 
-      target.scrollIntoView({ block: 'center', inline: 'center' });
-      target.click();
-      return {
+      const rect = target.getBoundingClientRect();
+      candidates.push({
         text,
         tag: target.tagName,
         role: target.getAttribute('role') || '',
         ariaLabel: target.getAttribute('aria-label') || '',
+        top: rect.top,
+        left: rect.left,
+        width: rect.width,
+        height: rect.height,
+        target,
+      });
+    }
+
+    candidates.sort((a, b) => {
+      const aVisibleBoost = a.top >= 0 && a.top < window.innerHeight ? 0 : 10000;
+      const bVisibleBoost = b.top >= 0 && b.top < window.innerHeight ? 0 : 10000;
+      return (aVisibleBoost + a.top) - (bVisibleBoost + b.top);
+    });
+
+    for (const candidate of candidates) {
+      if (candidate.width < 20 || candidate.height < 20) {
+        continue;
+      }
+
+      candidate.target.scrollIntoView({ block: 'center', inline: 'center' });
+      candidate.target.click();
+      return {
+        text: candidate.text,
+        tag: candidate.tag,
+        role: candidate.role,
+        ariaLabel: candidate.ariaLabel,
       };
     }
 
@@ -341,6 +472,11 @@ async function clickDeleteButton(page) {
     await page.waitForLoadState('domcontentloaded').catch(() => {});
     await page.waitForTimeout(1000);
 
+    if (await isEmptyGroupPage(page)) {
+      await goBackToList(page);
+      continue;
+    }
+
     const detailViewLoaded = await waitForEntryDetails(page);
     if (!detailViewLoaded) {
       throw new Error(`Clicked "${item.text}" but did not reach the password detail view.`);
@@ -350,9 +486,22 @@ async function clickDeleteButton(page) {
     await clickDeleteButton(page);
     await page.waitForTimeout(500);
 
-    console.log('Confirming...');
-    await clickDeleteButton(page);
-    await page.waitForTimeout(1500);
+    const deleteOutcome = await waitForDeleteOutcome(page);
+
+    if (deleteOutcome === 'details') {
+      console.log('Confirming...');
+      await clickDeleteButton(page);
+      await page.waitForTimeout(1500);
+    } else if (deleteOutcome === 'list') {
+      console.log('Deletion completed without a second confirmation step.');
+    } else {
+      if (await isEmptyGroupPage(page)) {
+        console.log('Grouped site is now empty, returning to the list.');
+        await goBackToList(page);
+      } else {
+        throw new Error('After clicking Delete, the page did not clearly return to the list or stay on the details view.');
+      }
+    }
 
     deletedCount += 1;
   }

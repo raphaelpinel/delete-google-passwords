@@ -1,8 +1,11 @@
 # Delete Google Passwords
 
-Google does not provide a one-click way to delete all saved passwords at once. 
-After having migrated to 1password, I was looking for a solution to delete them.
-The password manager page is also heavily protected, and Google is not happy to let scripts or bots log in and automate it directly. Because of that, this script does not try to log in for you. Instead, it attaches to a Chrome window that you start yourself, so you can authenticate normally first and then let the script perform the repetitive deletion work. At some point Google asked me to change my passworkd completely.
+Google Password Manager does not provide a one-click way to delete all saved passwords at once. 
+
+After having migrated to 1password, I was looking for a solution to delete them all.
+The password manager page is for obvious reasons heavily protected, and Google is not happy to let scripts or bots log in and automate it directly. Because of that, this script does not try to log in for you. Instead, it attaches to a Chrome window that you start yourself, so you can authenticate normally first and then let the script perform the repetitive deletion work. At some point Google asked me to change my password completely.
+
+Google will ask you multiple times to confirm your identity. If the script fails at some point, you can simply stop it (`Ctrl C`) and restart it where you left until you have deleted all your passwords. Still faster and less tedious than doing it by hand. 
 
 I was working for me as of 1.4.2026 but may need to be tweaked in order to work in the future.
 
@@ -32,7 +35,7 @@ The translation files live in:
 
 - [`translations/`](translations/)
 
-Each JSON file contains the words the script looks for in the Google Password Manager UI, such as delete, cancel, back, username, and password.
+It is very easy to extend it with your own translations.
 
 ## Install
 
