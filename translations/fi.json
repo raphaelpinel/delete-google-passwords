@@ -1,0 +1,7 @@
+{
+  "delete": ["poista", "poista salasana"],
+  "cancel": ["peruuta", "sulje", "valmis", "tallenna", "muokkaa"],
+  "back": ["takaisin", "palaa"],
+  "username": ["kayttajanimi", "käyttäjänimi", "sahkoposti", "sähköposti"],
+  "password": ["salasana"]
+}

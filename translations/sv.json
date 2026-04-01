@@ -1,0 +1,7 @@
+{
+  "delete": ["radera", "ta bort", "ta bort lösenord"],
+  "cancel": ["avbryt", "stang", "stäng", "klar", "spara", "redigera"],
+  "back": ["tillbaka", "ga tillbaka", "gå tillbaka"],
+  "username": ["anvandarnamn", "användarnamn", "e-post", "epost"],
+  "password": ["losenord", "lösenord"]
+}

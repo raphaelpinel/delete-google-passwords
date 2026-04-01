@@ -1,0 +1,7 @@
+{
+  "delete": ["scrios"],
+  "cancel": ["cuir in eagar", "dun", "dún", "cealaigh", "sabhail", "sábháil"],
+  "back": ["teigh siar", "téigh siar", "ar ais"],
+  "username": ["ainm usaideora", "ainm úsáideora", "riomhphost", "ríomhphost"],
+  "password": ["pasfhocal"]
+}

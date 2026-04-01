@@ -1,0 +1,7 @@
+{
+  "delete": ["delete", "remove", "delete password", "remove password"],
+  "cancel": ["cancel", "close", "done", "save", "edit"],
+  "back": ["back", "go back"],
+  "username": ["username", "email", "user"],
+  "password": ["password"]
+}

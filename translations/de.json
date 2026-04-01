@@ -1,0 +1,7 @@
+{
+  "delete": ["loschen", "löschen", "entfernen", "passwort loschen", "passwort löschen"],
+  "cancel": ["abbrechen", "schliessen", "schließen", "fertig", "speichern", "bearbeiten"],
+  "back": ["zuruck", "zurück"],
+  "username": ["nutzername", "benutzername", "e-mail"],
+  "password": ["passwort"]
+}
