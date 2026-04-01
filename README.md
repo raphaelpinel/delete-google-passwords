@@ -1,5 +1,16 @@
 # Delete Google Passwords
 
+Automates deleting all saved passwords from Google Password Manager using Playwright.
+
+## What this tool does
+
+- Connects to an existing Chrome session (no automated login)
+- Navigates to your saved passwords
+- Opens each entry and confirms deletion
+- Supports multiple UI languages via translation files
+
+## Why
+
 Google Password Manager does not provide a one-click way to delete all saved passwords at once. 
 
 After having migrated to 1password, I was looking for a solution to delete them all.
@@ -7,7 +18,7 @@ The password manager page is for obvious reasons heavily protected, and Google i
 
 Google will ask you multiple times to confirm your identity. If the script fails at some point, you can simply stop it (`Ctrl C`) and restart it where you left until you have deleted all your passwords. Still faster and less tedious than doing it by hand. 
 
-I was working for me as of 1.4.2026 but may need to be tweaked in order to work in the future.
+Tested and working as of April 1, 2026. Google may change the UI at any time.
 
 This project uses Playwright to connect to a real Google Chrome session and delete saved passwords from [passwords.google.com](https://passwords.google.com).
 
