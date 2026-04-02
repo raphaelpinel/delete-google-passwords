@@ -1,8 +1,10 @@
 # Delete Google Passwords
 
+Automates deleting all saved passwords from Google Password Manager using Playwright.
+
+
 ![demo](demo.gif)
 
-Automates deleting all saved passwords from Google Password Manager using Playwright.
 
 ## What this tool does
 
