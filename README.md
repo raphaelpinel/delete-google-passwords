@@ -1,5 +1,7 @@
 # Delete Google Passwords
 
+![demo](demo.gif)
+
 Automates deleting all saved passwords from Google Password Manager using Playwright.
 
 ## What this tool does
@@ -178,3 +180,4 @@ If the script stops with a selector-related error:
 - Make sure your passwords are already imported into 1Password before running this.
 - Consider deleting a small batch first to confirm the flow works on your account.
 - This script performs destructive actions. There is no undo in the script.
+
