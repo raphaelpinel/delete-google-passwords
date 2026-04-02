@@ -17,8 +17,8 @@ Automates deleting all saved passwords from Google Password Manager using Playwr
 
 Google Password Manager does not provide a one-click way to delete all saved passwords at once. 
 
-After having migrated to 1password, I was looking for a solution to delete them all.
-The password manager page is for obvious reasons heavily protected, and Google is not happy to let scripts or bots log in and automate it directly. Because of that, this script does not try to log in for you. Instead, it attaches to a Chrome window that you start yourself, so you can authenticate normally first and then let the script perform the repetitive deletion work. At some point Google asked me to change my password completely.
+After having migrated to another password manager, I was looking for a solution to delete them all from Google Passwords.
+Google Password Manager page is for obvious reasons heavily protected, and Google is not happy to let scripts or bots log in and automate it directly. Because of that, this script does not try to log in for you. Instead, it attaches to a Chrome window that you start yourself, so you can authenticate normally first and then let the script perform the repetitive deletion work. At some point Google asked me to change my password completely.
 
 Google will ask you multiple times to confirm your identity. If the script fails at some point, you can simply stop it (`Ctrl C`) and restart it where you left until you have deleted all your passwords. Still faster and less tedious than doing it by hand. 
 
@@ -179,7 +179,7 @@ If the script stops with a selector-related error:
 
 ## Safety Notes
 
-- Make sure your passwords are already imported into 1Password before running this.
+- Make sure your passwords are already imported before running this.
 - Consider deleting a small batch first to confirm the flow works on your account.
 - This script performs destructive actions. There is no undo in the script.
 
